@@ -1,0 +1,3 @@
+SELECT *
+FROM album
+WHERE label = 'RCA' AND year BETWEEN 1974 AND 1990;
