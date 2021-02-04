@@ -1,0 +1,5 @@
+# Ignore miscellaneous work files
+_resources/
+sample-assignment-*/
+solutions.pdf
+*.zip
