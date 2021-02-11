@@ -1,0 +1,4 @@
+SELECT DISTINCT custid
+FROM sale
+NATURAL JOIN album
+WHERE label = 'RCA';

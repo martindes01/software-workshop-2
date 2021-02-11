@@ -1,0 +1,4 @@
+SELECT DISTINCT postcode
+FROM customer
+NATURAL JOIN sale
+NATURAL JOIN review;
