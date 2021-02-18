@@ -1,0 +1,3 @@
+rootProject.name = 'exercise-3'
+
+include('lib')
