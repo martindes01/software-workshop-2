@@ -1,0 +1,21 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+dependencies {
+    implementation project(':circle-utils')
+}
+
+application {
+    mainClass = 'TCPClient'
+}
+
+run {
+    standardInput = System.in
+}

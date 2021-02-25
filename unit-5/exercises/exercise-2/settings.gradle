@@ -1,1 +1,6 @@
 rootProject.name = 'exercise-2'
+
+include 'circle-utils'
+
+include 'tcp-client'
+include 'tcp-server'
