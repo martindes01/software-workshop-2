@@ -1,0 +1,22 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+dependencies {
+    implementation project(':circle-utils')
+    implementation project(':udp-utils')
+}
+
+application {
+    mainClass = 'UDPClient'
+}
+
+run {
+    standardInput = System.in
+}

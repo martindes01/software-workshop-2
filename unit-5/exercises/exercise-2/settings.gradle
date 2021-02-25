@@ -4,3 +4,7 @@ include 'circle-utils'
 
 include 'tcp-client'
 include 'tcp-server'
+
+include 'udp-client'
+include 'udp-server'
+include 'udp-utils'
