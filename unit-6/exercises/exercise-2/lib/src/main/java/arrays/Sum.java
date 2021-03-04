@@ -34,4 +34,27 @@ public class Sum {
         return result;
     }
 
+    /**
+     * Returns the sum of the specified array. The array is split into two ranges,
+     * whose sums are calculated in parallel.
+     *
+     * @param array the array to sum
+     * @return the sum of the specified array
+     */
+    public static int sumParallel(int[] array) {
+        SumThread t1 = new SumThread(array, 0, array.length / 2);
+        SumThread t2 = new SumThread(array, array.length / 2, array.length);
+
+        t1.start();
+        t2.start();
+
+        try {
+            t1.join();
+            t2.join();
+        } catch (Exception e) {
+        }
+
+        return t1.getSum() + t2.getSum();
+    }
+
 }
