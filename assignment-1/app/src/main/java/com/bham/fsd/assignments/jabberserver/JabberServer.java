@@ -311,8 +311,30 @@ public class JabberServer {
         }
     }
 
+    /**
+     * Returns an ArrayList of the user IDs of all users with the current greatest
+     * number of followers.
+     *
+     * @return an ArrayList of the user IDs of all users with the current greatest
+     * number of followers
+     */
     public ArrayList<String> getUsersWithMostFollowers() {
-        return null;
+        final String QUERY = "SELECT useridB" + " FROM follows" + " GROUP BY useridB"
+                + " HAVING COUNT(useridA) >= ALL (" + " SELECT COUNT(useridA)" + " FROM follows" + " GROUP BY useridB"
+                + " )";
+        final String ATTRIBUTE_USER_ID = "useridB";
+
+        ArrayList<String> result = new ArrayList<>();
+
+        try (ResultSet resultSet = conn.createStatement().executeQuery(QUERY)) {
+            while (resultSet.next()) {
+                result.add(resultSet.getObject(ATTRIBUTE_USER_ID).toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public static void main(String[] args) {
@@ -320,7 +342,7 @@ public class JabberServer {
 
         JabberServer.connectToDatabase();
 
-        jabber.resetDatabase();
+        // jabber.resetDatabase();
 
         System.out.println("Get user IDs of users who follow user 0:");
         System.out.println(jabber.getFollowerUserIDs(0));
@@ -356,6 +378,10 @@ public class JabberServer {
 
         System.out.println("Adding like relationship: user 0 likes Jab 12...");
         jabber.addLike(0, 12);
+        System.out.println();
+
+        System.out.println("Get user IDs of users with the current greatest number of followers:");
+        System.out.println(jabber.getUsersWithMostFollowers());
         System.out.println();
     }
 
