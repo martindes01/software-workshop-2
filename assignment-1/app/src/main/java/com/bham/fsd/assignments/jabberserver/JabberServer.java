@@ -62,7 +62,7 @@ public class JabberServer {
      * Returns an ArrayList of the user IDs of users who are followers of the
      * specified user. These are the users who follow the specified user.
      *
-     * @param userid the user ID whose followers to retrieve
+     * @param userid the user ID of the user whose followers to retrieve
      * @return an ArrayList of the user IDs of users who follow the specified user
      */
     public ArrayList<String> getFollowerUserIDs(int userid) {
@@ -86,8 +86,33 @@ public class JabberServer {
         return result;
     }
 
+    /**
+     * Returns an ArrayList of the user IDs of users who the specified user is
+     * following. These are the users who are followed by the specified user.
+     *
+     * @param userid the user ID of the user whose influencers to retrieve
+     * @return an ArrayList of the user IDs of users who the specified user is
+     *         following
+     */
     public ArrayList<String> getFollowingUserIDs(int userid) {
-        return null;
+        final String QUERY = "SELECT useridB FROM follows WHERE useridA = ?";
+        final String ATTRIBUTE_USER_ID = "useridB";
+
+        ArrayList<String> result = new ArrayList<>();
+
+        try (PreparedStatement statement = conn.prepareStatement(QUERY)) {
+            statement.setInt(1, userid);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getObject(ATTRIBUTE_USER_ID).toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
@@ -129,7 +154,13 @@ public class JabberServer {
 
         // jabber.resetDatabase();
 
+        System.out.println("Get user IDs of users who follow user 0:");
         print1(jabber.getFollowerUserIDs(0));
+        System.out.println();
+
+        System.out.println("Get user IDs of users who user 0 is following:");
+        print1(jabber.getFollowingUserIDs(0));
+        System.out.println();
     }
 
     /*
