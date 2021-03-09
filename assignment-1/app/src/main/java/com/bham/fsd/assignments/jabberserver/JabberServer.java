@@ -191,8 +191,39 @@ public class JabberServer {
         return result;
     }
 
+    /**
+     * Returns an ArrayList whose elements are themselves ArrayLists that each
+     * contain a distinct pair of user IDs belonging to users who follow each other
+     * mutually. In the case of a self-following user, a pair comprises two
+     * identical user IDs. The result contains only one permutation of each pair.
+     *
+     * @return an ArrayList whose elements are themselves ArrayLists that each
+     * contain a distinct pair of user IDs belonging to users who follow each other
+     * mutually
+     */
     public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
-        return null;
+        final String QUERY = "SELECT DISTINCT f1.useridA, f1.useridB" + " FROM follows AS f1"
+                + " INNER JOIN follows AS f2 ON (f1.useridA = f2.useridB AND f1.useridB = f2.useridA)"
+                + " WHERE f1.useridA <= f1.useridB";
+        final String ATTRIBUTE_USER_ID_A = "useridA";
+        final String ATTRIBUTE_USER_ID_B = "useridB";
+
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+
+        try (ResultSet resultSet = conn.createStatement().executeQuery(QUERY)) {
+            while (resultSet.next()) {
+                ArrayList<String> pair = new ArrayList<>();
+
+                pair.add(resultSet.getObject(ATTRIBUTE_USER_ID_A).toString());
+                pair.add(resultSet.getObject(ATTRIBUTE_USER_ID_B).toString());
+
+                result.add(pair);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public void addUser(String username, String emailadd) {
@@ -224,15 +255,23 @@ public class JabberServer {
 
         System.out.println("Get user IDs of users who follow user 0:");
         System.out.println(jabber.getFollowerUserIDs(0));
+        System.out.println();
 
         System.out.println("Get user IDs of users who user 0 is following:");
         System.out.println(jabber.getFollowingUserIDs(0));
+        System.out.println();
 
         System.out.println("Get username and text of Jabs that user 0 has liked:");
         System.out.println(jabber.getLikesOfUser(0));
+        System.out.println();
 
         System.out.println("Get username and text of Jabs authored by users who user 0 is following:");
         System.out.println(jabber.getTimelineOfUser(0));
+        System.out.println();
+
+        System.out.println("Get distinct pairs of user IDs belonging to users who follow each other mutually:");
+        System.out.println(jabber.getMutualFollowUserIDs());
+        System.out.println();
     }
 
     /*
