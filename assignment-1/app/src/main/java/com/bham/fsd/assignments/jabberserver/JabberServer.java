@@ -247,8 +247,26 @@ public class JabberServer {
         }
     }
 
+    /**
+     * Adds a Jab to the 'jab' table with the specified text and a user ID
+     * corresponding to the specified username. The user ID is that of the first
+     * user found with the specified username. The Jab is given a unique Jab ID.
+     *
+     * @param username the username of the Jab author
+     * @param jabtext  the text of the new Jab
+     */
     public void addJab(String username, String jabtext) {
+        final String UPDATE = "INSERT INTO jab" + " VALUES"
+                + " ((SELECT MAX(jabid) FROM jab) + 1, (SELECT userid FROM jabberuser WHERE username = ? LIMIT 1), ?)";
 
+        try (PreparedStatement statement = conn.prepareStatement(UPDATE)) {
+            statement.setString(1, username);
+            statement.setString(2, jabtext);
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void addFollower(int userida, int useridb) {
@@ -292,6 +310,10 @@ public class JabberServer {
 
         System.out.println("Adding user with username 'TheRealMarty' and email address 'marty@real.com'...");
         jabber.addUser("TheRealMarty", "marty@real.com");
+        System.out.println();
+
+        System.out.println("Adding Jab by user 'TheRealMarty' with text 'I'm a real boy!'...");
+        jabber.addJab("TheRealMarty", "I'm a real boy!");
         System.out.println();
     }
 
