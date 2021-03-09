@@ -66,7 +66,7 @@ public class JabberServer {
      * @return an ArrayList of the user IDs of users who follow the specified user
      */
     public ArrayList<String> getFollowerUserIDs(int userid) {
-        final String QUERY = "SELECT useridA FROM follows WHERE useridB = ?";
+        final String QUERY = "SELECT useridA" + " FROM follows" + " WHERE useridB = ?";
         final String ATTRIBUTE_USER_ID = "useridA";
 
         ArrayList<String> result = new ArrayList<>();
@@ -95,7 +95,7 @@ public class JabberServer {
      *         following
      */
     public ArrayList<String> getFollowingUserIDs(int userid) {
-        final String QUERY = "SELECT useridB FROM follows WHERE useridA = ?";
+        final String QUERY = "SELECT useridB" + " FROM follows" + " WHERE useridA = ?";
         final String ATTRIBUTE_USER_ID = "useridB";
 
         ArrayList<String> result = new ArrayList<>();
@@ -125,7 +125,8 @@ public class JabberServer {
      *         a different Jab that the specified user has liked
      */
     public ArrayList<ArrayList<String>> getLikesOfUser(int userid) {
-        final String QUERY = "SELECT username, jabtext FROM likes INNER JOIN jab USING (jabid) INNER JOIN jabberuser ON (jab.userid = jabberuser.userid) WHERE likes.userid = ?";
+        final String QUERY = "SELECT username, jabtext" + " FROM likes" + " INNER JOIN jab USING (jabid)"
+                + " INNER JOIN jabberuser ON (jab.userid = jabberuser.userid)" + " WHERE likes.userid = ?";
         final String ATTRIBUTE_USERNAME = "username";
         final String ATTRIBUTE_JAB_TEXT = "jabtext";
 
@@ -151,8 +152,43 @@ public class JabberServer {
         return result;
     }
 
+    /**
+     * Returns an ArrayList whose elements are themselves ArrayLists that each
+     * contain the username and text of a different Jab that is authored by a user
+     * who the specified user is following.
+     *
+     * @param userid the user ID whose timeline to retrieve
+     * @return an ArrayList of ArrayLists that each contain the username and text of
+     *         a different Jab that is authored by a user who the specified user is
+     *         following
+     */
     public ArrayList<ArrayList<String>> getTimelineOfUser(int userid) {
-        return null;
+        final String QUERY = "SELECT username, jabtext" + " FROM follows"
+                + " INNER JOIN jabberuser ON (follows.useridB = jabberuser.userid)" + " INNER JOIN jab USING (userid)"
+                + " WHERE useridA = ?";
+        final String ATTRIBUTE_USERNAME = "username";
+        final String ATTRIBUTE_JAB_TEXT = "jabtext";
+
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+
+        try (PreparedStatement statement = conn.prepareStatement(QUERY)) {
+            statement.setInt(1, userid);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ArrayList<String> jab = new ArrayList<>();
+
+                    jab.add(resultSet.getObject(ATTRIBUTE_USERNAME).toString());
+                    jab.add(resultSet.getObject(ATTRIBUTE_JAB_TEXT).toString());
+
+                    result.add(jab);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
@@ -194,6 +230,9 @@ public class JabberServer {
 
         System.out.println("Get username and text of Jabs that user 0 has liked:");
         System.out.println(jabber.getLikesOfUser(0));
+
+        System.out.println("Get username and text of Jabs authored by users who user 0 is following:");
+        System.out.println(jabber.getTimelineOfUser(0));
     }
 
     /*
