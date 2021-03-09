@@ -269,8 +269,26 @@ public class JabberServer {
         }
     }
 
+    /**
+     * Adds a follows relationship to the 'follows' table to indicates that the user
+     * specified by 'userida' follows the user specified by 'useridb'.
+     *
+     * @param userida the user ID of the user following the user specified by
+     *                'useridb'
+     * @param useridb the user ID of the user being followed by the user specified
+     *                by 'userida'
+     */
     public void addFollower(int userida, int useridb) {
+        final String UPDATE = "INSERT INTO follows" + " VALUES" + " (?, ?)";
 
+        try (PreparedStatement statement = conn.prepareStatement(UPDATE)) {
+            statement.setInt(1, userida);
+            statement.setInt(2, useridb);
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void addLike(int userid, int jabid) {
@@ -314,6 +332,10 @@ public class JabberServer {
 
         System.out.println("Adding Jab by user 'TheRealMarty' with text 'I'm a real boy!'...");
         jabber.addJab("TheRealMarty", "I'm a real boy!");
+        System.out.println();
+
+        System.out.println("Adding follow relationship user 0 follows user 13...");
+        jabber.addFollower(0, 13);
         System.out.println();
     }
 
