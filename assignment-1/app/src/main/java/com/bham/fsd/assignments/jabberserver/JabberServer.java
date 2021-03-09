@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-// import java.sql.ResultSet;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 // import java.util.Collections;
@@ -58,8 +58,32 @@ public class JabberServer {
 
     }
 
+    /**
+     * Returns an ArrayList of the user IDs of users who are followers of the
+     * specified user. These are the users who follow the specified user.
+     *
+     * @param userid the user ID whose followers to retrieve
+     * @return an ArrayList of the user IDs of users who follow the specified user
+     */
     public ArrayList<String> getFollowerUserIDs(int userid) {
-        return null;
+        final String QUERY = "SELECT useridA FROM follows WHERE useridB = ?";
+        final String ATTRIBUTE_USER_ID = "useridA";
+
+        ArrayList<String> result = new ArrayList<>();
+
+        try (PreparedStatement statement = conn.prepareStatement(QUERY)) {
+            statement.setInt(1, userid);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(resultSet.getObject(ATTRIBUTE_USER_ID).toString());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<String> getFollowingUserIDs(int userid) {
@@ -104,6 +128,8 @@ public class JabberServer {
         JabberServer.connectToDatabase();
 
         // jabber.resetDatabase();
+
+        print1(jabber.getFollowerUserIDs(0));
     }
 
     /*
