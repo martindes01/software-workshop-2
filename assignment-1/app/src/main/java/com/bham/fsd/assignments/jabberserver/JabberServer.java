@@ -115,23 +115,55 @@ public class JabberServer {
         return result;
     }
 
-    public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
-        return null;
-    }
-
+    /**
+     * Returns an ArrayList whose elements are themselves ArrayLists that each
+     * contain the username and text of a different Jab that the specified user has
+     * liked.
+     *
+     * @param userid the user ID of the user whose liked Jabs to retrieve
+     * @return an ArrayList of ArrayLists that each contain the username and text of
+     *         a different Jab that the specified user has liked
+     */
     public ArrayList<ArrayList<String>> getLikesOfUser(int userid) {
-        return null;
+        final String QUERY = "SELECT username, jabtext FROM likes INNER JOIN jab USING (jabid) INNER JOIN jabberuser ON (jab.userid = jabberuser.userid) WHERE likes.userid = ?";
+        final String ATTRIBUTE_USERNAME = "username";
+        final String ATTRIBUTE_JAB_TEXT = "jabtext";
+
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+
+        try (PreparedStatement statement = conn.prepareStatement(QUERY)) {
+            statement.setInt(1, userid);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ArrayList<String> jab = new ArrayList<>();
+
+                    jab.add(resultSet.getObject(ATTRIBUTE_USERNAME).toString());
+                    jab.add(resultSet.getObject(ATTRIBUTE_JAB_TEXT).toString());
+
+                    result.add(jab);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<ArrayList<String>> getTimelineOfUser(int userid) {
         return null;
     }
 
-    public void addJab(String username, String jabtext) {
-
+    public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
+        return null;
     }
 
     public void addUser(String username, String emailadd) {
+
+    }
+
+    public void addJab(String username, String jabtext) {
 
     }
 
@@ -155,12 +187,13 @@ public class JabberServer {
         // jabber.resetDatabase();
 
         System.out.println("Get user IDs of users who follow user 0:");
-        print1(jabber.getFollowerUserIDs(0));
-        System.out.println();
+        System.out.println(jabber.getFollowerUserIDs(0));
 
         System.out.println("Get user IDs of users who user 0 is following:");
-        print1(jabber.getFollowingUserIDs(0));
-        System.out.println();
+        System.out.println(jabber.getFollowingUserIDs(0));
+
+        System.out.println("Get username and text of Jabs that user 0 has liked:");
+        System.out.println(jabber.getLikesOfUser(0));
     }
 
     /*
