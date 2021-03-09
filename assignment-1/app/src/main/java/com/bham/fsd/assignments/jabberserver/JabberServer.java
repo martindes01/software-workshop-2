@@ -198,8 +198,8 @@ public class JabberServer {
      * identical user IDs. The result contains only one permutation of each pair.
      *
      * @return an ArrayList whose elements are themselves ArrayLists that each
-     * contain a distinct pair of user IDs belonging to users who follow each other
-     * mutually
+     *         contain a distinct pair of user IDs belonging to users who follow
+     *         each other mutually
      */
     public ArrayList<ArrayList<String>> getMutualFollowUserIDs() {
         final String QUERY = "SELECT DISTINCT f1.useridA, f1.useridB" + " FROM follows AS f1"
@@ -226,8 +226,25 @@ public class JabberServer {
         return result;
     }
 
+    /**
+     * Adds a user to the 'jabberuser' table with the specified username and email
+     * address. The user is given a unique user ID.
+     *
+     * @param username the username of the new user
+     * @param emailadd the email address of the new user
+     */
     public void addUser(String username, String emailadd) {
+        final String UPDATE = "INSERT INTO jabberuser" + " VALUES"
+                + " ((SELECT MAX(userid) FROM jabberuser) + 1, ?, ?)";
 
+        try (PreparedStatement statement = conn.prepareStatement(UPDATE)) {
+            statement.setString(1, username);
+            statement.setString(2, emailadd);
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void addJab(String username, String jabtext) {
@@ -271,6 +288,10 @@ public class JabberServer {
 
         System.out.println("Get distinct pairs of user IDs belonging to users who follow each other mutually:");
         System.out.println(jabber.getMutualFollowUserIDs());
+        System.out.println();
+
+        System.out.println("Adding user with username 'TheRealMarty' and email address 'marty@real.com'...");
+        jabber.addUser("TheRealMarty", "marty@real.com");
         System.out.println();
     }
 
