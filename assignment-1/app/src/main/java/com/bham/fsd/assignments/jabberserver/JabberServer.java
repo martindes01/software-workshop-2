@@ -157,7 +157,7 @@ public class JabberServer {
      * contain the username and text of a different Jab that is authored by a user
      * who the specified user is following.
      *
-     * @param userid the user ID whose timeline to retrieve
+     * @param userid the user ID of the user whose timeline to retrieve
      * @return an ArrayList of ArrayLists that each contain the username and text of
      *         a different Jab that is authored by a user who the specified user is
      *         following
@@ -291,8 +291,24 @@ public class JabberServer {
         }
     }
 
+    /**
+     * Adds a likes relationship to the 'likes' table to indicate that the specified
+     * user likes the specified Jab.
+     *
+     * @param userid the user ID of the user who likes the specified Jab
+     * @param jabid  the Jab ID of the Jab liked by the specified user
+     */
     public void addLike(int userid, int jabid) {
+        final String UPDATE = "INSERT INTO likes" + " VALUES" + " (?, ?)";
 
+        try (PreparedStatement statement = conn.prepareStatement(UPDATE)) {
+            statement.setInt(1, userid);
+            statement.setInt(2, jabid);
+
+            statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<String> getUsersWithMostFollowers() {
@@ -304,7 +320,7 @@ public class JabberServer {
 
         JabberServer.connectToDatabase();
 
-        // jabber.resetDatabase();
+        jabber.resetDatabase();
 
         System.out.println("Get user IDs of users who follow user 0:");
         System.out.println(jabber.getFollowerUserIDs(0));
@@ -334,8 +350,12 @@ public class JabberServer {
         jabber.addJab("TheRealMarty", "I'm a real boy!");
         System.out.println();
 
-        System.out.println("Adding follow relationship user 0 follows user 13...");
+        System.out.println("Adding follow relationship: user 0 follows user 13...");
         jabber.addFollower(0, 13);
+        System.out.println();
+
+        System.out.println("Adding like relationship: user 0 likes Jab 12...");
+        jabber.addLike(0, 12);
         System.out.println();
     }
 
