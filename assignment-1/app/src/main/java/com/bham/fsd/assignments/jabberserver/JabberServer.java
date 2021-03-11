@@ -270,7 +270,7 @@ public class JabberServer {
     }
 
     /**
-     * Adds a follows relationship to the 'follows' table to indicates that the user
+     * Adds a follows relationship to the 'follows' table to indicate that the user
      * specified by 'userida' follows the user specified by 'useridb'.
      *
      * @param userida the user ID of the user following the user specified by
@@ -316,7 +316,7 @@ public class JabberServer {
      * number of followers.
      *
      * @return an ArrayList of the user IDs of all users with the current greatest
-     * number of followers
+     *         number of followers
      */
     public ArrayList<String> getUsersWithMostFollowers() {
         final String QUERY = "SELECT useridB" + " FROM follows" + " GROUP BY useridB"
@@ -343,46 +343,6 @@ public class JabberServer {
         JabberServer.connectToDatabase();
 
         // jabber.resetDatabase();
-
-        System.out.println("Get user IDs of users who follow user 0:");
-        System.out.println(jabber.getFollowerUserIDs(0));
-        System.out.println();
-
-        System.out.println("Get user IDs of users who user 0 is following:");
-        System.out.println(jabber.getFollowingUserIDs(0));
-        System.out.println();
-
-        System.out.println("Get username and text of Jabs that user 0 has liked:");
-        System.out.println(jabber.getLikesOfUser(0));
-        System.out.println();
-
-        System.out.println("Get username and text of Jabs authored by users who user 0 is following:");
-        System.out.println(jabber.getTimelineOfUser(0));
-        System.out.println();
-
-        System.out.println("Get distinct pairs of user IDs belonging to users who follow each other mutually:");
-        System.out.println(jabber.getMutualFollowUserIDs());
-        System.out.println();
-
-        System.out.println("Adding user with username 'TheRealMarty' and email address 'marty@real.com'...");
-        jabber.addUser("TheRealMarty", "marty@real.com");
-        System.out.println();
-
-        System.out.println("Adding Jab by user 'TheRealMarty' with text 'I'm a real boy!'...");
-        jabber.addJab("TheRealMarty", "I'm a real boy!");
-        System.out.println();
-
-        System.out.println("Adding follow relationship: user 0 follows user 13...");
-        jabber.addFollower(0, 13);
-        System.out.println();
-
-        System.out.println("Adding like relationship: user 0 likes Jab 12...");
-        jabber.addLike(0, 12);
-        System.out.println();
-
-        System.out.println("Get user IDs of users with the current greatest number of followers:");
-        System.out.println(jabber.getUsersWithMostFollowers());
-        System.out.println();
     }
 
     /*
