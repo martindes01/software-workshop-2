@@ -1,0 +1,29 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.postgresql:postgresql:42.2.18'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+application {
+    mainClass = 'com.bham.fsd.assignments.jabberserver.JabberServer'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
