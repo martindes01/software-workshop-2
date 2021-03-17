@@ -1,5 +1,7 @@
 package arrays;
 
+import java.util.concurrent.ForkJoinPool;
+
 public class Sum {
 
     /**
@@ -14,10 +16,9 @@ public class Sum {
 
     /**
      * Returns the sum of specified range of the specified array. The initial index
-     * of the range (from) must lie between zero and the length of the array,
-     * inclusive. The final index of the range (to) must be less than or equal to
-     * the length of the array. If the final index is less than or equal to the
-     * initial index, the sum is zero.
+     * of the range (from) must be greater than or equal to zero. The final index of
+     * the range (to) must be less than or equal to the length of the array. If the
+     * final index is less than or equal to the initial index, the sum is zero.
      *
      * @param array the array whose range to sum
      * @param from  the initial index of the range to sum, inclusive
@@ -42,19 +43,9 @@ public class Sum {
      * @return the sum of the specified array
      */
     public static int sumParallel(int[] array) {
-        SumThread t1 = new SumThread(array, 0, array.length / 2);
-        SumThread t2 = new SumThread(array, array.length / 2, array.length);
+        ForkJoinPool pool = ForkJoinPool.commonPool();
 
-        t1.start();
-        t2.start();
-
-        try {
-            t1.join();
-            t2.join();
-        } catch (Exception e) {
-        }
-
-        return t1.getSum() + t2.getSum();
+        return pool.invoke(new SumRecursiveTask(array));
     }
 
 }
