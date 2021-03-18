@@ -1,0 +1,21 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation project(':database')
+}
+
+application {
+    mainClass = 'server.Server'
+}
