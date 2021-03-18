@@ -1,0 +1,17 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+application {
+    mainClass = 'client.Client'
+}
+
+run {
+    standardInput = System.in
+}

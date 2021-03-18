@@ -1,0 +1,5 @@
+rootProject.name = 'exercise-2'
+
+include('client')
+include('database')
+include('server')
