@@ -17,6 +17,7 @@ build/
 
 # Ignore miscellaneous work files
 _resources/
+quizzes/
 sample-assignment-*/
 solutions.pdf
 *.zip
