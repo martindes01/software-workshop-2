@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="root" alignment="TOP_RIGHT" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.menu.MenuController">
+   <children>
+      <TableView fx:id="sandwichBreadTableView">
+        <columns>
+          <TableColumn fx:id="sandwichBreadNameTableColumn" prefWidth="-1.0" text="Bread" />
+          <TableColumn fx:id="sandwichBreadPriceTableColumn" prefWidth="-1.0" text="Price" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <TableView fx:id="sandwichFillingTableView">
+         <columns>
+            <TableColumn fx:id="sandwichFillingNameTableColumn" prefWidth="-1.0" text="Filling" />
+            <TableColumn fx:id="sandwichFillingPriceTableColumn" prefWidth="-1.0" text="Price" />
+         </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+      <Label fx:id="totalPriceLabel" textAlignment="RIGHT" />
+   </children>
+</VBox>
