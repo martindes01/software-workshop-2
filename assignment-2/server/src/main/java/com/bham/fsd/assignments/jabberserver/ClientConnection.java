@@ -4,8 +4,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import com.bham.fsd.assignments.jabberutils.JabberMessage;
-
 public class ClientConnection implements Runnable {
 
     private final Socket socket;

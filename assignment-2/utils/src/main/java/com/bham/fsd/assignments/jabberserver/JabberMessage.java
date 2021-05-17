@@ -1,12 +1,14 @@
-package com.bham.fsd.assignments.jabberutils;
+package com.bham.fsd.assignments.jabberserver;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class JabberMessage implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String message;
-    private ArrayList<ArrayList<String>> data;
+    private ArrayList<ArrayList<String>> response;
 
     /**
      * Constructs a new Jabber protocol message with the specified message and data.
@@ -16,7 +18,7 @@ public class JabberMessage implements Serializable {
      */
     public JabberMessage(String message, ArrayList<ArrayList<String>> data) {
         this.message = message;
-        this.data = data;
+        response = data;
     }
 
     /**
@@ -34,7 +36,7 @@ public class JabberMessage implements Serializable {
      * @return the data of this Jabber protocol message
      */
     public ArrayList<ArrayList<String>> getData() {
-        return data;
+        return response;
     }
 
     /**
