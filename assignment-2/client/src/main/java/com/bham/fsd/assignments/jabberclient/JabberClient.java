@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.bham.fsd.assignments.jabberclient.dashboard.DashboardController;
 import com.bham.fsd.assignments.jabberclient.login.LoginController;
 import com.bham.fsd.assignments.jabberserver.JabberMessage;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -24,15 +28,29 @@ public class JabberClient extends Application {
     private static final String HOST = "localhost";
     private static final int PORT = 44444;
 
-    private static final String SIGN_IN_REQUEST_PREFIX = "signin ";
     private static final String REGISTRATION_REQUEST_PREFIX = "register ";
+    private static final String SIGN_IN_REQUEST_PREFIX = "signin ";
+    private static final String SIGN_OUT_REQUEST_MESSAGE = "signout";
+
+    private static final String TIMELINE_REQUEST_MESSAGE = "timeline";
+    private static final String USERS_REQUEST_MESSAGE = "users ";
+
+    private static final String LIKE_REQUEST_PREFIX = "like ";
+    private static final String FOLLOW_REQUEST_PREFIX = "follow ";
+    private static final String POST_REQUEST_PREFIX = "post ";
 
     private Stage stage;
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
+    private DashboardController dashboardController;
     private LoginController loginController;
+
+    private final List<String> usernames = new ArrayList<>();
+    private String signedInUsername = "";
+
+    private boolean signedIn = false;
 
     /**
      * Creates a socket, connects it to the server, and wraps its input and output
@@ -69,7 +87,7 @@ public class JabberClient extends Application {
      *
      * @param request the request to send
      */
-    public void sendRequest(JabberMessage request) {
+    private void sendRequest(JabberMessage request) {
         try {
             out.writeObject(request);
             out.flush();
@@ -79,13 +97,58 @@ public class JabberClient extends Application {
     }
 
     /**
+     * Instructs the dashboard controller to update the timeline view using the
+     * specified server response data.
+     *
+     * @param data the timeline data
+     */
+    public void handleTimelineResponse(ArrayList<ArrayList<String>> data) {
+        if (dashboardController != null) {
+            dashboardController.showTimeline(data);
+        }
+    }
+
+    /**
+     * Instructs the dashboard controller to update the users view using the
+     * specified server response data.
+     *
+     * @param data the users data
+     */
+    public void handleUsersResponse(ArrayList<ArrayList<String>> data) {
+        if (dashboardController != null) {
+            dashboardController.showUsers(data);
+        }
+    }
+
+    /**
+     * Displays the dashboard view.
+     */
+    public void showDashboardView() {
+        dashboardController = new DashboardController(this);
+
+        try {
+            stage.setScene(new Scene(dashboardController.getView()));
+            stage.setTitle(dashboardController.getTitle());
+            stage.setResizable(true);
+            stage.setMinWidth(stage.getWidth());
+            stage.setMinHeight(stage.getHeight());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Displays the login view.
      */
     public void showLoginView() {
+        loginController = new LoginController(this);
+
         try {
             stage.setScene(new Scene(loginController.getView()));
             stage.setTitle(loginController.getTitle());
             stage.setResizable(false);
+            stage.sizeToScene();
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,7 +160,9 @@ public class JabberClient extends Application {
      *
      * @param username the username of the user to be registered
      */
-    public void register(String username) {
+    public void requestRegistration(String username) {
+        String strippedUsername = username.strip();
+        usernames.add(strippedUsername);
         sendRequest(new JabberMessage(REGISTRATION_REQUEST_PREFIX + username.strip()));
     }
 
@@ -106,8 +171,108 @@ public class JabberClient extends Application {
      *
      * @param username the username of the user to be signed in
      */
-    public void signIn(String username) {
-        sendRequest(new JabberMessage(SIGN_IN_REQUEST_PREFIX + username.strip()));
+    public void requestSignIn(String username) {
+        String strippedUsername = username.strip();
+        usernames.add(strippedUsername);
+        sendRequest(new JabberMessage(SIGN_IN_REQUEST_PREFIX + strippedUsername));
+    }
+
+    /**
+     * Sends a sign-out request to the server and exits the application.
+     */
+    public void requestSignOut() {
+        sendRequest(new JabberMessage(SIGN_OUT_REQUEST_MESSAGE));
+        signedIn = false;
+        Platform.exit();
+    }
+
+    /**
+     * Sends a timeline request to the server.
+     */
+    public void requestTimeline() {
+        sendRequest(new JabberMessage(TIMELINE_REQUEST_MESSAGE));
+    }
+
+    /**
+     * Sends a user request to the server.
+     */
+    public void requestUsers() {
+        sendRequest(new JabberMessage(USERS_REQUEST_MESSAGE));
+    }
+
+    /**
+     * Sends a like request with the specified Jab ID to the server.
+     *
+     * @param jabID the ID of the Jab to be liked
+     */
+    public void requestLike(int jabID) {
+        sendRequest(new JabberMessage(LIKE_REQUEST_PREFIX + jabID));
+    }
+
+    /**
+     * Sends a follow request with the specified username to the server.
+     *
+     * @param username the username of the user to be followed
+     */
+    public void requestFollow(String username) {
+        sendRequest(new JabberMessage(FOLLOW_REQUEST_PREFIX + username.strip()));
+    }
+
+    /**
+     * Sends a post request with the specified Jab text to the server.
+     *
+     * @param jabText the text of the Jab to be posted
+     */
+    public void requestPost(String jabText) {
+        sendRequest(new JabberMessage(POST_REQUEST_PREFIX + jabText.strip()));
+    }
+
+    /**
+     * Returns the username of the user most recently signed in by this client.
+     *
+     * @return the username of the user most recently signed in by this client
+     */
+    public String getSignedInUsername() {
+        return signedInUsername;
+    }
+
+    /**
+     * Returns the connection state of this client to the server, which is true if
+     * the socket between the client and server is open, false otherwise.
+     *
+     * @return true if the socket between the client and server is open, false
+     *         otherwise
+     */
+    public boolean isConnected() {
+        if (socket == null) {
+            return false;
+        } else {
+            return !socket.isClosed();
+        }
+    }
+
+    /**
+     * Returns the signed-in state of this client, which is true if a user is
+     * currently signed into this client, false otherwise.
+     *
+     * @return true if a user is currently signed into this client, false otherwise
+     */
+    public boolean isSignedIn() {
+        return signedIn;
+    }
+
+    /**
+     * Sets the username of the user reported to be the most recently signed in by
+     * this client to that at the specified index in the list of all usernames for
+     * which this client has requested sign-in. This also has the side-effect of
+     * setting the signed-in state of this client.
+     *
+     * @param index the index of the signed-in username in the list of all usernames
+     *              for which this client has requested sign-in
+     */
+    public void setSignedInUsername(int index) {
+        signedInUsername = usernames.get(index);
+        signedIn = true;
     }
 
     @Override
@@ -119,10 +284,10 @@ public class JabberClient extends Application {
         });
 
         if (connectToServer()) {
-            loginController = new LoginController(this);
             showLoginView();
 
-            new Thread(new ServerListener(socket, in)).start();
+            new Thread(new ServerListener(this, in)).start();
+            new Thread(new ServerPoller(this)).start();
         }
     }
 

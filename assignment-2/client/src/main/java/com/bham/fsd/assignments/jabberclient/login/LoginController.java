@@ -23,7 +23,7 @@ public class LoginController {
     private static final String VIEW_TITLE = "Jabber Login";
     private static final String VIEW_FILENAME = "login.fxml";
 
-    private JabberClient client;
+    private final JabberClient client;
     private Parent view;
 
     @FXML
@@ -56,7 +56,7 @@ public class LoginController {
      */
     private void handleRegistrationRequest(MouseEvent event) {
         if (event.getButton().equals(MouseButton.PRIMARY)) {
-            client.register(usernameTextField.getText());
+            client.requestRegistration(usernameTextField.getText());
         }
     }
 
@@ -68,7 +68,7 @@ public class LoginController {
      */
     private void handleSignInRequest(MouseEvent event) {
         if (event.getButton().equals(MouseButton.PRIMARY)) {
-            client.signIn(usernameTextField.getText());
+            client.requestSignIn(usernameTextField.getText());
         }
     }
 
