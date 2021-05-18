@@ -121,6 +121,8 @@ public class JabberClient extends Application {
         if (connectToServer()) {
             loginController = new LoginController(this);
             showLoginView();
+
+            new Thread(new ServerListener(socket, in)).start();
         }
     }
 
