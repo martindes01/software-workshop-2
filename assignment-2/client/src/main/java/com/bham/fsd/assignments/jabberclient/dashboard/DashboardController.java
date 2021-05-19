@@ -11,6 +11,7 @@ import com.bham.fsd.assignments.jabberclient.controls.UserCell;
 import com.bham.fsd.assignments.jabberclient.models.Jab;
 import com.bham.fsd.assignments.jabberclient.models.User;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -32,6 +34,9 @@ public class DashboardController {
     private static final String VIEW_TITLE = "Jabber Dashboard";
     private static final String VIEW_FILENAME = "dashboard.fxml";
 
+    private static final String CHARACTERS_REMAINING_SUFFIX = " characters remaining";
+    private static final int MAX_JAB_LENGTH = 255;
+
     private final JabberClient client;
     private Parent view;
 
@@ -39,6 +44,8 @@ public class DashboardController {
     private Button postButton;
     @FXML
     private Button signOutButton;
+    @FXML
+    private Label charactersLabel;
     @FXML
     private Label welcomeLabel;
     @FXML
@@ -63,7 +70,14 @@ public class DashboardController {
     @FXML
     private void initialize() {
         postButton.setOnMouseClicked(e -> handlePostRequest(e));
+        postButton.disableProperty().bind(Bindings.isEmpty(jabTextArea.textProperty()));
+
         signOutButton.setOnMouseClicked(e -> handleSignOutRequest(e));
+
+        charactersLabel.textProperty()
+                .bind(Bindings.concat(
+                        Bindings.subtract(MAX_JAB_LENGTH, Bindings.length(jabTextArea.textProperty())).asString(),
+                        CHARACTERS_REMAINING_SUFFIX));
 
         welcomeLabel.setText("Welcome, " + client.getSignedInUsername() + "!");
 
@@ -74,6 +88,14 @@ public class DashboardController {
         userListView.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> usersUpdateEnabled = false);
         userListView.addEventFilter(MouseEvent.MOUSE_RELEASED, e -> usersUpdateEnabled = true);
         userListView.setCellFactory(value -> new UserCell(client));
+
+        jabTextArea.setTextFormatter(new TextFormatter<>(change -> {
+            if (change.getControlNewText().length() > MAX_JAB_LENGTH) {
+                change.setText(change.getText().substring(0, MAX_JAB_LENGTH - change.getControlText().length()));
+            }
+
+            return change;
+        }));
     }
 
     /**
