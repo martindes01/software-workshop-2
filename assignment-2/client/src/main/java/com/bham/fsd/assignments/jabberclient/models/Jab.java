@@ -11,9 +11,9 @@ import java.util.Objects;
  */
 public class Jab implements Comparable<Jab> {
 
-    private static final int JAB_ID_INDEX = 0;
-    private static final int USERNAME_INDEX = 1;
-    private static final int JAB_TEXT_INDEX = 2;
+    private static final int USERNAME_INDEX = 0;
+    private static final int JAB_TEXT_INDEX = 1;
+    private static final int JAB_ID_INDEX = 2;
     private static final int LIKES_INDEX = 3;
 
     private final int jabID;
@@ -39,11 +39,11 @@ public class Jab implements Comparable<Jab> {
 
     /**
      * Creates a new Jab with the data in the specified list. It is assumed that the
-     * list contains, in this order, only the ID, author username, text and number
+     * list contains, in this order, only the author username, text, ID and number
      * of likes of this Jab.
      *
-     * @param data the list containing, in this order, only the ID, author username,
-     *             text and number of likes of this Jab
+     * @param data the list containing, in this order, only the author username,
+     *             text, ID and number of likes of this Jab
      */
     public Jab(ArrayList<String> data) {
         this(Integer.parseInt(data.get(JAB_ID_INDEX)), data.get(USERNAME_INDEX), data.get(JAB_TEXT_INDEX),
