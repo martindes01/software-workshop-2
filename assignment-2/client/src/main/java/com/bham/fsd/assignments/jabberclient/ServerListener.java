@@ -56,8 +56,7 @@ public class ServerListener implements Runnable {
 
                     case SIGN_IN_RESPONSE_SUCCESS:
                         if (!client.isSignedIn()) {
-                            client.setSignedInUsername(usernameIndex);
-                            Platform.runLater(() -> client.showDashboardView());
+                            Platform.runLater(() -> client.handleSignInSuccess(usernameIndex));
                         }
                         break;
 
