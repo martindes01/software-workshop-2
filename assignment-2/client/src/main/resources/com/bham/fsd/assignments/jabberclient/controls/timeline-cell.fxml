@@ -5,7 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="10.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="root" alignment="CENTER" maxWidth="${root.parent.width}" spacing="10.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
   <children>
     <Label fx:id="textLabel" maxWidth="1.7976931348623157E308" text="Username &gt; Jab text" wrapText="true" HBox.hgrow="ALWAYS" />
     <Button fx:id="likeButton" text="_Like" />
