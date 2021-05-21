@@ -1,0 +1,23 @@
+plugins {
+    id 'application'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.postgresql:postgresql:42.2.18'
+
+    implementation project(':utils')
+}
+
+application {
+    mainClass = 'com.bham.fsd.assignments.jabberserver.JabberServer'
+}

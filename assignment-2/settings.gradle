@@ -1,0 +1,5 @@
+rootProject.name = 'assignment-2'
+
+include('client')
+include('server')
+include('utils')
