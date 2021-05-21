@@ -7,11 +7,15 @@ import com.bham.fsd.assignments.jabberclient.models.User;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
 /**
  * The user cell controller class is responsible for handling updates to user
@@ -22,6 +26,9 @@ import javafx.scene.input.MouseEvent;
 public class UserCellController {
 
     private static final String VIEW_FILENAME = "user-cell.fxml";
+    private static final String STYLESHEET_FILENAME = "user-cell.css";
+
+    private static final String FOLLOW_ICON_CLASS_NAME = "follow-icon";
 
     private final JabberClient client;
     private final User user;
@@ -45,7 +52,14 @@ public class UserCellController {
 
     @FXML
     private void initialize() {
+        Node followIcon = new Region();
+        followIcon.getStyleClass().add(FOLLOW_ICON_CLASS_NAME);
+
         followButton.setOnMouseClicked(e -> handleFollowRequest(e));
+        followButton.setAlignment(Pos.CENTER);
+        followButton.setContentDisplay(ContentDisplay.LEFT);
+        followButton.setGraphic(followIcon);
+
         usernameLabel.setText(user.getUsername());
     }
 
@@ -72,6 +86,7 @@ public class UserCellController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_FILENAME));
             loader.setController(this);
             view = loader.load();
+            view.getStylesheets().add(getClass().getResource(STYLESHEET_FILENAME).toExternalForm());
         }
 
         return view;

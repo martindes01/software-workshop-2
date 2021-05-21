@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.bham.fsd.assignments.jabberclient.dashboard.DashboardController;
 import com.bham.fsd.assignments.jabberclient.login.LoginController;
@@ -47,7 +50,7 @@ public class JabberClient extends Application {
     private DashboardController dashboardController;
     private LoginController loginController;
 
-    private final List<String> usernames = new ArrayList<>();
+    private List<Entry<String, Boolean>> usernameEntries = new ArrayList<>();
     private String signedInUsername = "";
 
     private boolean signedIn = false;
@@ -94,6 +97,29 @@ public class JabberClient extends Application {
         } catch (IOException e) {
             JabberDialogs.showCommunicationErrorDialog();
         }
+    }
+
+    /**
+     * Sets the signed-in state of this client, sets the signed-in username saved by
+     * this client to that of the username entry at the specified index in the list
+     * of all username entries for which this client has requested registration or
+     * sign-in, displays the registration success dialog if this is a username for
+     * which registration was requested, and displays the dashboard view.
+     *
+     * @param index the index of the signed-in username entry in the list of all
+     *              username entries for which this client has requested
+     *              registration or sign-in
+     */
+    public void handleSignInSuccess(int index) {
+        signedIn = true;
+
+        Map.Entry<String, Boolean> usernameEntry = usernameEntries.get(index);
+        signedInUsername = usernameEntry.getKey();
+        if (usernameEntry.getValue()) {
+            JabberDialogs.showRegistrationSuccessDialog();
+        }
+
+        showDashboardView();
     }
 
     /**
@@ -162,7 +188,7 @@ public class JabberClient extends Application {
      */
     public void requestRegistration(String username) {
         String strippedUsername = username.strip();
-        usernames.add(strippedUsername);
+        usernameEntries.add(new AbstractMap.SimpleEntry<>(strippedUsername, true));
         sendRequest(new JabberMessage(REGISTRATION_REQUEST_PREFIX + username.strip()));
     }
 
@@ -173,7 +199,7 @@ public class JabberClient extends Application {
      */
     public void requestSignIn(String username) {
         String strippedUsername = username.strip();
-        usernames.add(strippedUsername);
+        usernameEntries.add(new AbstractMap.SimpleEntry<>(strippedUsername, false));
         sendRequest(new JabberMessage(SIGN_IN_REQUEST_PREFIX + strippedUsername));
     }
 
@@ -259,20 +285,6 @@ public class JabberClient extends Application {
      */
     public boolean isSignedIn() {
         return signedIn;
-    }
-
-    /**
-     * Sets the username of the user reported to be the most recently signed in by
-     * this client to that at the specified index in the list of all usernames for
-     * which this client has requested sign-in. This also has the side-effect of
-     * setting the signed-in state of this client.
-     *
-     * @param index the index of the signed-in username in the list of all usernames
-     *              for which this client has requested sign-in
-     */
-    public void setSignedInUsername(int index) {
-        signedInUsername = usernames.get(index);
-        signedIn = true;
     }
 
     @Override

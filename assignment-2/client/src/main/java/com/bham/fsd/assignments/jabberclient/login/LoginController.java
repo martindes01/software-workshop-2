@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import com.bham.fsd.assignments.jabberclient.JabberClient;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -22,6 +24,8 @@ public class LoginController {
 
     private static final String VIEW_TITLE = "Jabber Login";
     private static final String VIEW_FILENAME = "login.fxml";
+
+    private static final int MAX_USERNAME_LENGTH = 255;
 
     private final JabberClient client;
     private Parent view;
@@ -45,7 +49,18 @@ public class LoginController {
     @FXML
     private void initialize() {
         registerButton.setOnMouseClicked(e -> handleRegistrationRequest(e));
+        registerButton.disableProperty().bind(Bindings.isEmpty(usernameTextField.textProperty()));
+
         signInButton.setOnMouseClicked(e -> handleSignInRequest(e));
+        signInButton.disableProperty().bind(Bindings.isEmpty(usernameTextField.textProperty()));
+
+        usernameTextField.setTextFormatter(new TextFormatter<>(change -> {
+            if (change.getControlNewText().length() > MAX_USERNAME_LENGTH) {
+                change.setText(change.getText().substring(0, MAX_USERNAME_LENGTH - change.getControlText().length()));
+            }
+
+            return change;
+        }));
     }
 
     /**
