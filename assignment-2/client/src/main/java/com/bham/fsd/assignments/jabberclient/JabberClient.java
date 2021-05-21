@@ -36,7 +36,7 @@ public class JabberClient extends Application {
     private static final String SIGN_OUT_REQUEST_MESSAGE = "signout";
 
     private static final String TIMELINE_REQUEST_MESSAGE = "timeline";
-    private static final String USERS_REQUEST_MESSAGE = "users ";
+    private static final String USERS_REQUEST_MESSAGE = "users";
 
     private static final String LIKE_REQUEST_PREFIX = "like ";
     private static final String FOLLOW_REQUEST_PREFIX = "follow ";
